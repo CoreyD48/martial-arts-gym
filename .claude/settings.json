@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/tmp/security-review/martial-arts-gym-full-1774364462/findings",
+      "/private/tmp/security-review/martial-arts-gym-full-1774364462/findings"
+    ]
+  }
+}

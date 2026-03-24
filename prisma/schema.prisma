@@ -1,0 +1,353 @@
+// IMPORTANT: After modifying this file, update CHANGELOG.md with a summary of your changes.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum AgeGroup {
+  CHILD // 4–15
+  TEEN  // 16–17
+  ADULT // 18+
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ClassCategory {
+  FAMILY
+  GRAPPLING
+  STRIKING
+}
+
+enum GrapplingStyle {
+  WRESTLING
+  JUDO
+  JIU_JITSU_GI
+  JIU_JITSU_NOGI
+}
+
+enum StrikingStyle {
+  BOXING
+  KICKBOXING
+  MUAY_THAI
+}
+
+// Belt rank for children (4–15) — used for grappling + muay thai + kickboxing (as shirt)
+enum ChildRank {
+  WHITE
+  WHITE_WHITE
+  GREY
+  GREY_BLACK
+  YELLOW_WHITE
+  YELLOW
+  YELLOW_BLACK
+  ORANGE_WHITE
+  ORANGE
+  ORANGE_BLACK
+  GREEN_WHITE
+  GREEN
+  GREEN_BLACK
+}
+
+// Rank for teens (16–17) — used for grappling + muay thai + kickboxing
+enum TeenRank {
+  PURPLE
+  BROWN
+}
+
+// Rank for adults (18+) — used for grappling + muay thai + kickboxing
+enum AdultRank {
+  WHITE
+  BLUE
+  PURPLE
+  BROWN
+  BLACK
+  BLACK_2ND
+  BLACK_3RD
+  BLACK_4TH
+  BLACK_5TH
+  BLACK_6TH
+  RED_BLACK
+  RED_WHITE
+  RED
+}
+
+enum MembershipType {
+  GRAPPLING
+  STRIKING
+  BOTH
+  CHILDREN
+  FAMILY
+}
+
+enum AccountStatus {
+  ACTIVE
+  ON_HOLD
+  INACTIVE
+  SUSPENDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  WAIVED
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(STUDENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  student    Student?
+  instructor Instructor?
+
+  @@map("users")
+}
+
+// ─── Gyms ─────────────────────────────────────────────────────────────────────
+
+model Gym {
+  id        String   @id @default(cuid())
+  name      String
+  address   String
+  city      String
+  state     String   @default("CO")
+  zip       String
+  phone     String?
+  email     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gymStudents    GymStudent[]
+  gymInstructors GymInstructor[]
+  classes        Class[]
+  payments       Payment[]
+
+  @@map("gyms")
+}
+
+// ─── Students ─────────────────────────────────────────────────────────────────
+
+model Student {
+  id               String         @id @default(cuid())
+  userId           String         @unique
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName        String
+  lastName         String
+  dateOfBirth      DateTime       @db.Date
+  ageGroup         AgeGroup
+  phone            String?
+  emergencyContact String?
+  emergencyPhone   String?
+  membershipType   MembershipType
+  notes            String?
+  accountStatus    AccountStatus  @default(ACTIVE)
+  totalHours       Decimal        @default(0) @db.Decimal(10, 2)
+  lastAttendance   DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  gymStudents  GymStudent[]
+  attendances  Attendance[]
+  rankHistory  RankHistory[]
+  currentRanks StudentRank[]
+  payments     Payment[]
+
+  @@map("students")
+}
+
+model GymStudent {
+  id        String   @id @default(cuid())
+  studentId String
+  gymId     String
+  isPrimary Boolean  @default(false)
+  joinedAt  DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  gym     Gym     @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, gymId])
+  @@map("gym_students")
+}
+
+// ─── Instructors ──────────────────────────────────────────────────────────────
+
+model Instructor {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName String
+  lastName  String
+  phone     String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  gymInstructors GymInstructor[]
+  classes        Class[]
+
+  @@map("instructors")
+}
+
+model GymInstructor {
+  id           String     @id @default(cuid())
+  instructorId String
+  gymId        String
+  isPrimary    Boolean    @default(false)
+  joinedAt     DateTime   @default(now())
+
+  instructor Instructor @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  gym        Gym        @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+  @@unique([instructorId, gymId])
+  @@map("gym_instructors")
+}
+
+// ─── Classes ──────────────────────────────────────────────────────────────────
+
+model Class {
+  id                      String          @id @default(cuid())
+  gymId                   String
+  instructorId            String?
+  name                    String
+  category                ClassCategory
+  grapplingStyle          GrapplingStyle?
+  strikingStyle           StrikingStyle?
+  skillLevel              SkillLevel
+  ageGroup                AgeGroup?
+  dayOfWeek               Int
+  startTime               String
+  durationMinutes         Int
+  countsTowardAdvancement Boolean         @default(true)
+  isActive                Boolean         @default(true)
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  gym        Gym         @relation(fields: [gymId], references: [id])
+  instructor Instructor? @relation(fields: [instructorId], references: [id])
+  sessions   ClassSession[]
+
+  @@map("classes")
+}
+
+model ClassSession {
+  id           String    @id @default(cuid())
+  classId      String
+  sessionDate  DateTime  @db.Date
+  cancelledAt  DateTime?
+  cancelReason String?
+  notes        String?
+  createdAt    DateTime  @default(now())
+
+  class       Class        @relation(fields: [classId], references: [id])
+  attendances Attendance[]
+
+  @@map("class_sessions")
+}
+
+// ─── Attendance ───────────────────────────────────────────────────────────────
+
+model Attendance {
+  id              String   @id @default(cuid())
+  studentId       String
+  sessionId       String
+  checkedInAt     DateTime @default(now())
+  hoursLogged     Decimal  @db.Decimal(6, 2)
+  countsTowardAdv Boolean
+
+  student Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  session ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, sessionId])
+  @@map("attendances")
+}
+
+// ─── Ranks ────────────────────────────────────────────────────────────────────
+
+model StudentRank {
+  id             String          @id @default(cuid())
+  studentId      String
+  category       ClassCategory
+  grapplingStyle GrapplingStyle?
+  strikingStyle  StrikingStyle?
+  ageGroup       AgeGroup
+  childRank      ChildRank?
+  teenRank       TeenRank?
+  adultRank      AdultRank?
+  awardedAt      DateTime        @default(now())
+  awardedById    String?
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, category, grapplingStyle, strikingStyle])
+  @@map("student_ranks")
+}
+
+model RankHistory {
+  id               String          @id @default(cuid())
+  studentId        String
+  category         ClassCategory
+  grapplingStyle   GrapplingStyle?
+  strikingStyle    StrikingStyle?
+  fromChildRank    ChildRank?
+  fromTeenRank     TeenRank?
+  fromAdultRank    AdultRank?
+  toChildRank      ChildRank?
+  toTeenRank       TeenRank?
+  toAdultRank      AdultRank?
+  hoursAtPromotion Decimal         @db.Decimal(10, 2)
+  awardedAt        DateTime        @default(now())
+  awardedById      String?
+  awardedByName    String?
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("rank_histories")
+}
+
+// ─── Payments ─────────────────────────────────────────────────────────────────
+
+model Payment {
+  id             String         @id @default(cuid())
+  studentId      String
+  gymId          String?
+  billingMonth   DateTime       @db.Date
+  membershipType MembershipType
+  amountDue      Decimal        @db.Decimal(8, 2)
+  amountPaid     Decimal        @default(0) @db.Decimal(8, 2)
+  status         PaymentStatus  @default(PENDING)
+  paidAt         DateTime?
+  notes          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  gym     Gym?    @relation(fields: [gymId], references: [id])
+
+  @@unique([studentId, billingMonth])
+  @@map("payments")
+}
