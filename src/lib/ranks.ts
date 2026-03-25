@@ -57,8 +57,7 @@ export function getRankLabel(
   rank: ChildRank | TeenRank | AdultRank
 ): string {
   const labels: Record<string, string> = {
-    // ChildRank
-    [ChildRank.WHITE]: "White Belt",
+    // ChildRank (unique values only; WHITE shares value with AdultRank.WHITE)
     [ChildRank.WHITE_WHITE]: "White/White Belt",
     [ChildRank.GREY]: "Grey Belt",
     [ChildRank.GREY_BLACK]: "Grey/Black Belt",
@@ -71,10 +70,7 @@ export function getRankLabel(
     [ChildRank.GREEN_WHITE]: "Green/White Belt",
     [ChildRank.GREEN]: "Green Belt",
     [ChildRank.GREEN_BLACK]: "Green/Black Belt",
-    // TeenRank
-    [TeenRank.PURPLE]: "Purple Belt",
-    [TeenRank.BROWN]: "Brown Belt",
-    // AdultRank
+    // AdultRank (also covers TeenRank.PURPLE/BROWN and ChildRank.WHITE which share string values)
     [AdultRank.WHITE]: "White Belt",
     [AdultRank.BLUE]: "Blue Belt",
     [AdultRank.PURPLE]: "Purple Belt",
@@ -94,8 +90,7 @@ export function getRankLabel(
 
 export function getRankColor(rank: ChildRank | TeenRank | AdultRank): string {
   const colors: Record<string, string> = {
-    // ChildRank
-    [ChildRank.WHITE]: "#ffffff",
+    // ChildRank (unique values only; WHITE shares value with AdultRank.WHITE)
     [ChildRank.WHITE_WHITE]: "#ffffff",
     [ChildRank.GREY]: "#9ca3af",
     [ChildRank.GREY_BLACK]: "#6b7280",
@@ -108,10 +103,7 @@ export function getRankColor(rank: ChildRank | TeenRank | AdultRank): string {
     [ChildRank.GREEN_WHITE]: "#bbf7d0",
     [ChildRank.GREEN]: "#22c55e",
     [ChildRank.GREEN_BLACK]: "#16a34a",
-    // TeenRank
-    [TeenRank.PURPLE]: "#7e22ce",
-    [TeenRank.BROWN]: "#78350f",
-    // AdultRank
+    // AdultRank (also covers TeenRank.PURPLE/BROWN and ChildRank.WHITE which share string values)
     [AdultRank.WHITE]: "#ffffff",
     [AdultRank.BLUE]: "#1e40af",
     [AdultRank.PURPLE]: "#7e22ce",

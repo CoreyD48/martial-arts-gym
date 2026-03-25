@@ -33,6 +33,9 @@ export async function PATCH(
   // INSTRUCTORs may only update payments for students at gyms they are assigned to.
   // OWNER/ADMIN can update any payment.
   if (session.user.role === "INSTRUCTOR") {
+    if (!existingPayment.gymId) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
     const instructorGym = await prisma.gymInstructor.findUnique({
       where: {
         instructorId_gymId: {

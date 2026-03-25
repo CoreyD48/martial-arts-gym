@@ -72,7 +72,7 @@ export function ReportsCharts({
               tickFormatter={(v) => `$${v.toLocaleString()}`}
             />
             <Tooltip
-              formatter={(value: number) => [`$${value.toLocaleString()}`, "Revenue"]}
+              formatter={(value) => [`$${Number(value).toLocaleString()}`, "Revenue"]}
               contentStyle={{
                 border: "1px solid #e5e7eb",
                 borderRadius: "6px",
@@ -161,7 +161,7 @@ export function ReportsCharts({
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number, name: string) => [value, name]}
+                  formatter={(value, name) => [value, name]}
                   contentStyle={{
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
