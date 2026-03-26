@@ -59,21 +59,26 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
-            One Way Martial Arts
-          </h1>
-          <p className="text-gray-500 mt-2 text-sm">
-            Sign in to your account
-          </p>
+      {/* Logo mark */}
+      <div className="flex flex-col items-center mb-8">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-900/50 mb-4">
+          <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 12l2 2 4-4" />
+            <path d="M12 3c-1.5 1.5-3 2-5 2a9 9 0 0 0 9 15 9 9 0 0 0 9-15c-2 0-3.5-.5-5-2" />
+            <path d="M12 3c1.5 1.5 3 2 5 2" />
+          </svg>
         </div>
+        <h1 className="text-2xl font-bold text-white tracking-tight">One Way Martial Arts</h1>
+        <p className="text-indigo-300/70 mt-1 text-sm">Sign in to your account</p>
+      </div>
 
+      {/* Card */}
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 shadow-2xl">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-300 mb-1.5"
             >
               Email address
             </label>
@@ -82,18 +87,18 @@ export default function LoginPage() {
               type="email"
               autoComplete="email"
               {...register("email")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
               placeholder="you@example.com"
             />
             {errors.email && (
-              <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+              <p className="mt-1.5 text-xs text-red-400">{errors.email.message}</p>
             )}
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray-300 mb-1.5"
             >
               Password
             </label>
@@ -102,26 +107,26 @@ export default function LoginPage() {
               type="password"
               autoComplete="current-password"
               {...register("password")}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
               placeholder="••••••••"
             />
             {errors.password && (
-              <p className="mt-1 text-xs text-red-600">
+              <p className="mt-1.5 text-xs text-red-400">
                 {errors.password.message}
               </p>
             )}
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-3">
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-950 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-indigo-900/40 mt-2"
           >
             {loading && (
               <svg

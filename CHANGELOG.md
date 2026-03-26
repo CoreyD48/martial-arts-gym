@@ -2,6 +2,10 @@
 
 ## [2026-03-25]
 
+### Changed
+- **`src/app/(auth)/layout.tsx`** — Dark gradient background with indigo radial glow and subtle grid pattern replaces plain gray.
+- **`src/app/(auth)/login/page.tsx`** — Login card restyled: dark glassmorphism card, white text on dark inputs, indigo logo mark above the form, polished button shadow.
+
 ### Fixed
 - **`src/lib/prisma.ts`** — Wrapped `createPrismaClient()` in a try-catch that calls `console.error("[prisma] Failed to initialise PrismaClient:", err)` before rethrowing. Added a `console.log` on successful init. Previously, any error thrown during Prisma initialisation (missing `DATABASE_URL`, bad connection string, adapter failure) was swallowed silently, causing the app to return 503s with no log output. The error is still rethrown so request handlers receive it and can return a 500.
 - **`src/app/global-error.tsx`** — Created Next.js App Router root error boundary (`global-error.tsx`). Catches any unhandled error that escapes the root layout — including Prisma init failures — logs it via `console.error("[global-error] Unhandled application error:", error)`, and renders a minimal error page with the error message and a "Try again" button. Without this boundary, root-level errors cause a silent 503 with no visible output in Railway's log stream.
