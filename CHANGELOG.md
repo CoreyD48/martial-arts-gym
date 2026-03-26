@@ -1,5 +1,13 @@
 # Changelog
 
+## [2026-03-26]
+
+### Added
+- **`src/lib/run-migrations.ts`** — New utility that runs `prisma migrate deploy` followed by `prisma db seed` at app startup using `execSync`. Guards against double-execution with a module-level `migrationRan` flag (safe under Next.js HMR). If `DATABASE_URL` is absent the function logs a warning and returns early. Errors from either command are caught and logged via `console.error` but are **not** rethrown, so a migration failure does not prevent the app from starting.
+
+### Changed
+- **`src/app/layout.tsx`** — Added a top-level `await runMigrations()` call (Next.js App Router server components support top-level await natively). This ensures `prisma migrate deploy` and `prisma db seed` run before the app handles any requests, replacing the previous pre-deploy command approach which failed because `DATABASE_URL` is unavailable at build/pre-deploy time and is only injected at runtime.
+
 ## [2026-03-25]
 
 ### Changed
